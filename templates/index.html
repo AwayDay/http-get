@@ -35,10 +35,10 @@
             <div class="col">
                 <div class="card">
                     <div class="card-body">
-                        <p>uri : {{ uri }}</p>
-                        <p>프로토콜 : {{ protocol }}</p>
-                        <p>호스트 : {{ host }}</p>
-                        <p>경로 : {{ path }}</p>
+                        <p>uri : {% raw %}{{ uri }}{% endraw %}</p>
+                        <p>프로토콜 : {% raw %}{{ protocol }}{% endraw %}</p>
+                        <p>호스트 : {% raw %}{{ host }}{% endraw %}</p>
+                        <p>경로 : {% raw %}{{ path }}{% endraw %}</p>
                     </div>
                 </div>
             </div>
@@ -46,8 +46,8 @@
                 <div class="card">
                     <div class="card-body">
                         <div class="form-row" v-for="param in params">
-                            <p v-if="param.key.length">키 : {{ param.key }}</p>
-                            <p v-if="param.value.length">, 밸류 : {{ param.value }}</p>
+                            <p v-if="param.key.length">키 : {% raw %}{{ param.key }}{% endraw %}</p>
+                            <p v-if="param.value.length">, 밸류 : {% raw %}{{ param.value }}{% endraw %}</p>
                         </div>
                     </div>
                 </div>
