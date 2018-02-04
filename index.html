@@ -1,0 +1,161 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>HTTP get request infomation</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+        crossorigin="anonymous">
+</head>
+
+<body>
+    <div class="container" id="app">
+        <div class="alert alert-danger" role="alert" v-if="isUriInput && !isCorrectUrl">
+            올바른 uri를 입력해주세요.
+        </div>
+
+        <div class="row">
+            <div class="col">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="input-group mb-3">
+                            <input type="text" class="form-control" placeholder="uri" v-model="uri">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="alert alert-primary" role="alert" v-if="isCorrectUrl">
+            요청 정보가 표시됩니다.
+        </div>
+
+        <div class="row" v-if="isUriInput && isCorrectUrl">
+            <div class="col">
+                <div class="card">
+                    <div class="card-body">
+                        <p>uri : {{ uri }}</p>
+                        <p>프로토콜 : {{ protocol }}</p>
+                        <p>호스트 : {{ host }}</p>
+                        <p>경로 : {{ path }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col" v-if="params.length">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="form-row" v-for="param in params">
+                            <p v-if="param.key.length">키 : {{ param.key }}</p>
+                            <p v-if="param.value.length">, 밸류 : {{ param.value }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+    <script>
+        (function () {
+            "use strict";
+
+            new Vue({
+                el: '#app',
+                data: {
+                    uri: ''
+                },
+                computed: {
+                    isUriInput: function () {
+                        return this.uri.length > 0;
+                    },
+                    isCorrectUrl: function () {
+                        var expression = /(https?:\/\/)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/
+                        var regex = new RegExp(expression);
+                        return this.uri.match(regex);
+                    },
+                    protocol: function () {
+                        if (!this.isCorrectUrl) {
+                            return '';
+                        }
+                        if (this.uri.indexOf('://') < 0) {
+                            return 'http';
+                        }
+                        return this.uri.split(['://'])[0];
+                    },
+                    host: function () {
+                        if (!this.isCorrectUrl) {
+                            return '';
+                        }
+                        var host = this.uri;
+                        if (host.indexOf('://') > 0) {
+                            host = host.substr(host.indexOf('://') + 3);
+                        }
+                        if (host.indexOf('?') > 0) {
+                            host = host.substr(0, host.indexOf('?'));
+                        }
+                        if (host.indexOf(':') > 0) {
+                            host = host.substr(0, host.indexOf(':'));
+                        }
+                        if (host.indexOf('/') > 0) {
+                            host = host.substr(0, host.indexOf('/'));
+                        }
+                        return host;
+                    },
+                    path: function() {
+                        if (!this.isCorrectUrl) {
+                            return '';
+                        }
+                        var host = this.uri;
+                        if (host.indexOf('://') > 0) {
+                            host = host.substr(host.indexOf('://') + 3);
+                        }
+                        if (host.indexOf('?') > 0) {
+                            host = host.substr(0, host.indexOf('?'));
+                        }
+                        if (host.indexOf(':') > 0) {
+                            host = host.substr(0, host.indexOf(':'));
+                        }
+
+                        if (host.indexOf('/') > 0) {
+                            host = host.substr(host.indexOf('/'));
+                        } else {
+                            host = '/';
+                        }
+                        return host;
+                    },
+                    params: function () {
+                        if (!this.isCorrectUrl) {
+                            return [];
+                        }
+                        if (this.uri.indexOf('?') < 0) {
+                            return [];
+                        }
+
+                        var paramString = this.uri.split(['?'])[1];
+                        var paramList = paramString.split('&');
+                        var getParamList = [];
+                        paramList.forEach(function (element, index, array) {
+                            if (element.length === 0) {
+                                return;
+                            }
+                            var map = element.split('=');
+                            if (map.length === 1) {
+                                getParamList.push({ key: map[0], value: '' });
+                            } else if (map.length === 2) {
+                                getParamList.push({ key: map[0], value: map[1] });
+                            } else {
+                                return;
+                            }
+                            
+                        });
+
+                        return getParamList;
+                    }
+                }
+            });
+        }());
+    </script>
+</body>
+
+</html>
